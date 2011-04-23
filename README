@@ -32,7 +32,7 @@ Installing sslsniff
     instead of a CA cert.
 
     You would run sslsniff as: 
-    ./sslsniff -a -p <$listenPort> -w <$logFile> -c <$caCert>
+    ./sslsniff -a -s <$listenPort> -w <$logFile> -c <$caCert>
 
     Targeted Mode:
 
@@ -47,7 +47,7 @@ Installing sslsniff
     wildcard cert remains)
 
     You would run sslsniff as: 
-    ./sslsniff -t -p <$listenPort> -w <$logFile> -m IPSCACLASEA1.crt \
+    ./sslsniff -t -s <$listenPort> -w <$logFile> -m IPSCACLASEA1.crt \
       -c <$certDir>
 
     Other options:
