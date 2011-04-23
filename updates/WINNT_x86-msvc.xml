@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<updates>
+    <update type="minor" version="3.0.10" extensionVersion="3.0.7" buildID="2010011112"  detailsURL="http://www.mozilla.com/firefox/releases/3.0.7.html">
+        <patch type="complete" URL="http://releases.mozilla.org/pub/mozilla.org/firefox/releases/3.0.10/update/win32/en-US/firefox-3.0.10.complete.mar" hashFunction="SHA1" hashValue="1c5e35b063e2b11b03b59ccf13e88f40b9b643eb" size="9873417" />
+    </update>
+</updates>

