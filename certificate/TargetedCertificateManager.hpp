@@ -39,7 +39,8 @@ using namespace boost::filesystem;
 class TargetedCertificateManager : public CertificateManager {
 
 private:
-  Certificate *chain;
+  // Certificate *chain;
+  std::list<Certificate*> chainList;
   std::list<Certificate*> certificates;
 
 public:
@@ -54,7 +55,7 @@ public:
 				       bool wildcardOK,
 				       X509 *serverCertificate,
 				       Certificate **cert,
-				       Certificate **chain);
+				       std::list<Certificate*> **chainCerts);
 
 };
 

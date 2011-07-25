@@ -47,7 +47,7 @@ static void printUsage(char *command) {
 	  "-u <updateLocation>\tLoction of any Firefox XML update files.\n"
 	  "-m <certificateChain>\tLocation of any intermediary certificates.\n"
 	  "-h <port>\t\tPort to listen on for HTTP interception (required for\n\t\t\tfingerprinting).\n"
-	  "-f <ff,ie,safari,opera>\tOnly intercept requests from the specified browser(s).\n"
+	  "-f <ff,ie,safari,opera,ios>\tOnly intercept requests from the specified browser(s).\n"
 	  "-d\t\t\tDeny OCSP requests for our certificates.\n"
 	  "-p\t\t\tOnly log HTTP POSTs\n"
 	  "-e <url>\t\tIntercept Mozilla Addon Updates\n"
@@ -63,8 +63,6 @@ static bool isOptionsValid(Options &options) {
 	   !options.fingerprintList.empty())   return false;  // Fingerprinting but no http port.
   else if (options.httpListenPort != -1     &&
 	   options.fingerprintList.empty())    return false;  // Http port but no fingerprinting.
-  else if (!options.targetedMode            &&
-	   !options.chainLocation.empty())     return false;  // CA mode with a chain cert.
   else if (!options.addonLocation.empty()   &&
 	   options.addonHash.empty())          return false;
   else                                         return true;
@@ -116,7 +114,8 @@ static void initializeLogging(Options &options) {
 static CertificateManager* initializeCertificateManager(Options &options) {
   if (options.targetedMode) return new TargetedCertificateManager(options.certificateLocation,
 								  options.chainLocation);
-  else                      return new AuthorityCertificateManager(options.certificateLocation);
+  else                      return new AuthorityCertificateManager(options.certificateLocation,
+								   options.chainLocation);
 }
 
 int main(int argc, char* argv[]) {

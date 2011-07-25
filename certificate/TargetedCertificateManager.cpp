@@ -39,8 +39,11 @@ TargetedCertificateManager::TargetedCertificateManager(std::string &directory,
   path chainPath(chain);
   
   if (!exists(certDir)) throw NoCertificateDirectoryException();
-  if (chain.empty())    this->chain = NULL;
-  else                  this->chain = readCredentialsFromFile(chainPath, false);
+
+  if (!chain.empty()) {
+    Certificate *chain = readCredentialsFromFile(chainPath, false);
+    chainList.push_back(chain);
+  }
   
   directory_iterator end_itr; 
 
@@ -89,10 +92,11 @@ void TargetedCertificateManager::getCertificateForTarget(boost::asio::ip::tcp::e
 							 bool wildcardOK,
 							 X509 *serverCertificate,
 							 Certificate **cert,
-							 Certificate **chain)
+							 std::list<Certificate*> **chainList)
 {
   boost::asio::ip::address address = endpoint.address();
-  *chain                           = this->chain;
+  *chainList                       = &(this->chainList);
+  // *chain                           = this->chain;
 
   std::list<Certificate*>::iterator i   = certificates.begin();
   std::list<Certificate*>::iterator end = certificates.end();

@@ -57,7 +57,8 @@ bool FingerprintManager::isValidTarget(ip::address &address) {
   std::vector<std::string>::iterator iter = validAgents.begin();
 
   while (iter != validAgents.end()) {
-    if      (*iter == "ff" && (userAgent->find("Firefox") != std::string::npos) && (userAgent->find("Firefox/3.5") == std::string::npos))    return true;
+    if      (*iter == "ff" && (userAgent->find("Firefox") != std::string::npos))    return true;
+    else if (*iter == "ios" && (userAgent->find("iPhone") != std::string::npos))    return true;
     else if (*iter == "ie" && (userAgent->find("MSIE") != std::string::npos))       return true;
     else if (*iter == "safari" && (userAgent->find("Safari") != std::string::npos)) return true;
     else if (*iter == "opera" && (userAgent->find("Opera") != std::string::npos))   return true;

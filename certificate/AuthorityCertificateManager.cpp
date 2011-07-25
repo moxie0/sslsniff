@@ -20,9 +20,18 @@
 #include "AuthorityCertificateManager.hpp"
 
 
-AuthorityCertificateManager::AuthorityCertificateManager(std::string &file) {
+AuthorityCertificateManager::AuthorityCertificateManager(std::string &file, std::string &chain) {
   path certPath(file);
+  path chainPath(chain);
+
   this->authority = readCredentialsFromFile(certPath, false);
+  chainList.push_back(this->authority);
+
+  if (!chain.empty()) {
+    Certificate *chain = readCredentialsFromFile(chainPath, false);
+    chainList.push_back(chain);
+  }
+
   this->leafPair  = buildKeysForClient();
 }
 
@@ -41,7 +50,7 @@ void AuthorityCertificateManager::getCertificateForTarget(boost::asio::ip::tcp::
 							  bool wildcardOK,
 							  X509 *serverCertificate,
 							  Certificate **cert,
-							  Certificate **chain)
+							  std::list<Certificate*> **chainList)
 {
   X509_NAME *serverName   = X509_get_subject_name(serverCertificate);
   X509_NAME *issuerName   = X509_get_subject_name(authority->getCert());
@@ -63,7 +72,8 @@ void AuthorityCertificateManager::getCertificateForTarget(boost::asio::ip::tcp::
   leaf->setKey(this->leafPair);
 
   *cert  = leaf;
-  *chain = this->authority;
+  *chainList = &(this->chainList);
+  // *chain = this->authority;
 }
 
 unsigned int AuthorityCertificateManager::generateRandomSerial() {

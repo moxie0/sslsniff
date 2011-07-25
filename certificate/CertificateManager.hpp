@@ -28,6 +28,7 @@
 #include <openssl/rand.h>
 
 #include <string>
+#include <list>
 #include <boost/filesystem.hpp>
 #include <boost/asio.hpp>
 
@@ -43,7 +44,7 @@ public:
   virtual void getCertificateForTarget(boost::asio::ip::tcp::endpoint &endpoint,
 				       bool wildcardOK,
 				       X509 *serverCertificate, Certificate **cert,
-				       Certificate **chain) = 0;
+				       std::list<Certificate*> **chainCerts) = 0;
 
 protected:
   Certificate* readCredentialsFromFile(const path &file, bool resolve);  

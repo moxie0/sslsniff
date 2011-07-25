@@ -37,19 +37,20 @@ class AuthorityCertificateManager : public CertificateManager {
 
 private:
   Certificate *authority;
+  std::list<Certificate*> chainList;
   EVP_PKEY *leafPair;
 
   EVP_PKEY* buildKeysForClient();
   unsigned int generateRandomSerial();
 
 public:
-  AuthorityCertificateManager(std::string &file);
+  AuthorityCertificateManager(std::string &file, std::string &chain);
 
   virtual bool isOCSPAddress(boost::asio::ip::tcp::endpoint &endpoint);
   virtual void getCertificateForTarget(boost::asio::ip::tcp::endpoint &endpoint, 
 				       bool wildcardOK,
 				       X509 *serverCertificate, 
-				       Certificate **cert, Certificate **chain);
+				       Certificate **cert, std::list<Certificate*> **chain);
 
   virtual bool isValidTarget(boost::asio::ip::tcp::endpoint &endpoint, bool wildcardOK);
 

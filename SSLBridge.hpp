@@ -34,6 +34,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <list>
 #include <map>
 
 #include "util/Util.hpp"
@@ -71,7 +72,7 @@ private:
   SessionCache *cache;
 
   X509* getServerCertificate();
-  void buildClientContext(SSL_CTX *context, Certificate *leaf, Certificate *chain);
+  void buildClientContext(SSL_CTX *context, Certificate *leaf, std::list<Certificate*> *chain);
   int isAvailable(int revents);
   int isClosed(int revents);
   int forwardData(SSL *from, SSL *to);

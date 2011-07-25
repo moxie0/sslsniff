@@ -26,7 +26,7 @@ X509* SSLBridge::getServerCertificate() {
   return SSL_get_peer_certificate(serverSession);
 }
 
-void SSLBridge::buildClientContext(SSL_CTX *context, Certificate *leaf, Certificate *chain) {
+void SSLBridge::buildClientContext(SSL_CTX *context, Certificate *leaf, std::list<Certificate*> *chain) {
 
   SSL_CTX_sess_set_new_cb(context, &SessionCache::setNewSessionIdTramp);
   SSL_CTX_sess_set_get_cb(context, &SessionCache::getSessionIdTramp);
@@ -39,8 +39,15 @@ void SSLBridge::buildClientContext(SSL_CTX *context, Certificate *leaf, Certific
     throw SSLConnectionError();
   }
 
-  if (chain != NULL)
-    SSL_CTX_add_extra_chain_cert(context, chain->getCert());
+  std::list<Certificate*>::iterator i   = chain->begin();
+  std::list<Certificate*>::iterator end = chain->end();
+
+  for (;i != end; i++) {
+    SSL_CTX_add_extra_chain_cert(context, (*i)->getCert());
+  }
+
+  // if (chain != NULL)
+  //   SSL_CTX_add_extra_chain_cert(context, chain->getCert());
 
   SSL_CTX_set_mode(context, SSL_MODE_AUTO_RETRY);
 }
@@ -64,7 +71,9 @@ void SSLBridge::setServerName() {
 }
 
 void SSLBridge::handshakeWithClient(CertificateManager &manager, bool wildcardOK) {
-  Certificate *leaf, *chain;
+  Certificate *leaf;
+  std::list<Certificate*> *chain;
+
   ip::tcp::endpoint endpoint = getRemoteEndpoint();
   manager.getCertificateForTarget(endpoint, wildcardOK, getServerCertificate(), &leaf, &chain);
   
