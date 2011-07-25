@@ -1,5 +1,5 @@
 AC_INIT(sslsniff.cpp)
-AM_INIT_AUTOMAKE(sslsniff,0.7)
+AM_INIT_AUTOMAKE(sslsniff,0.8)
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL

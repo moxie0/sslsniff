@@ -1,4 +1,4 @@
-sslsniff v0.7
+sslsniff v0.8
 Moxie Marlinspike <moxie@thoughtcrime.org>
 ------------------------------------
 
@@ -7,14 +7,14 @@ REQUIRES: openssl, libboost1.35-dev, libboost-filesystem1.35-dev,
 
 The three steps to get this running are:
 
-    * Download and run sslsniff-0.7.tar.gz
+    * Download and run sslsniff-0.8.tar.gz
     * Setup iptables (or pf on BSD)
     * Run arpspoof (or whatever method you'd like to use to redirect traffic).
 
 Installing sslsniff
 -------------------
 
-    * Unpack sslsniff-0.7.tar.gz, run "./configure" and "make". (You'll have
+    * Unpack sslsniff-0.8.tar.gz, run "./configure" and "make". (You'll have
       to make some changes to build on BSD systems, see below under "Setting up 
       pf")
     * There are two ways to run this: in "authority" mode or "targeted" mode.
