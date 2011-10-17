@@ -22,7 +22,7 @@
 #include "../Logger.hpp"
 
 
-std::map<std::string, std::string>& HttpHeaders::getHeaders() {
+std::map<std::string, std::string, ci_less>& HttpHeaders::getHeaders() {
   return headers;
 }
 
