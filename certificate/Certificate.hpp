@@ -57,7 +57,7 @@ private:
     int forwardSlash = url.find('/', 7);
 
     if (forwardSlash) forwardSlash -= 7;
-    else              forwardSlash  = std::string::npos;
+    else              forwardSlash  = (int) std::string::npos;
 
     std::string name = url.substr(7, forwardSlash);	
     

@@ -29,7 +29,7 @@ void HTTPSBridge::buildRequestFromHeaders(HttpHeaders &headers, std::string &req
 	  << "HTTP/1.0\r\n";
       
   std::map<std::string,std::string>::iterator iter;
-  std::map<std::string,std::string>& headersMap = headers.getHeaders();
+  std::map<std::string,std::string,ci_less>& headersMap = headers.getHeaders();
   for( iter = headersMap.begin(); iter != headersMap.end(); ++iter ) {
     std::string key   = iter->first;
     std::string value = iter->second;
@@ -50,7 +50,6 @@ void HTTPSBridge::buildRequestFromHeaders(HttpHeaders &headers, std::string &req
 bool HTTPSBridge::readFromClient() {
   char buf[4096];
   int bytesRead;
-  int bytesWritten;
 
   do {
     if ((bytesRead = SSL_read(clientSession, buf, sizeof(buf))) <= 0) 
