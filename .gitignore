@@ -1,0 +1,14 @@
+.deps
+*.o
+Makefile
+Makefile.in
+config.*
+aclocal.m4
+autom4te.cache
+configure
+depcomp
+install-sh
+ltmain.sh
+m4
+missing
+sslsniff
