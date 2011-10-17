@@ -23,6 +23,8 @@ Certificate* CertificateManager::readCredentialsFromFile(const path &file, bool 
   X509 *cert    = loadCertificateFromFile(system_complete(file).string().c_str());
   EVP_PKEY *key = loadKeyFromFile(system_complete(file).string().c_str());
 
+  if (!cert || !key) throw BadCertificateException();
+
   return new Certificate(cert, key, resolve);
 }
 
