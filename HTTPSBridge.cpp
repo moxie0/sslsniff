@@ -50,7 +50,6 @@ void HTTPSBridge::buildRequestFromHeaders(HttpHeaders &headers, std::string &req
 bool HTTPSBridge::readFromClient() {
   char buf[4096];
   int bytesRead;
-  int bytesWritten;
 
   do {
     if ((bytesRead = SSL_read(clientSession, buf, sizeof(buf))) <= 0) 
